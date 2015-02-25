@@ -6,6 +6,7 @@ import java.sql.*;
 import java.math.*;
 import java.util.*;
 import java.util.regex.*;
+import org.data.*;
 
 
 
@@ -19,33 +20,6 @@ public class Sql {
     public Map<String, List<Integer>> fieldId;
 
 
-    // Add To List Map (map, key, val)
-    // - add a value to a list-map (values with similar keys exist)
-    @SuppressWarnings({"unchecked", "rawtypes"})
-    private static void addToListMap(Map map, Object key, Object val) {
-        if (map.get(key) == null) {
-            map.put(key, new ArrayList());
-        }
-        ((List) map.get(key)).add(val);
-    }
-
-
-    // Coll To String (coll, format, separator)
-    // - converts a collection to a string format (use \\(item) for each item)
-    @SuppressWarnings("rawtypes")
-    private static String collToString(Collection coll, String format, String separator) {
-        StringBuilder ans = new StringBuilder();
-        for (Object item : coll) {
-            ans.append(format.replaceAll("\\\\\\(item\\)", item.toString()));
-            ans.append(separator);
-        }
-        if (ans.length() > separator.length()) {
-            ans.delete(ans.length() - separator.length(), ans.length());
-        }
-        return ans.toString();
-    }
-
-
     // Find And Replace (text, patternStr, replaceStr)
     // - find the positions of given pattern in a list-map and replace it with given string
     public static Map<String, List<Integer>> findAndReplace(StringBuilder text, String patternStr, String replaceStr) {
@@ -54,7 +28,7 @@ public class Sql {
         Matcher match = pattern.matcher(text.toString());
         for (int id = 1, del = 0; match.find(); id++) {
             int start = del + match.start(), end = del + match.end();
-            addToListMap(ans, text.substring(start + 1, end), id);
+            Coll.addToListMap(ans, text.substring(start + 1, end), id);
             text.replace(start, end, replaceStr);
             del += replaceStr.length() - (end - start);
         }
@@ -185,8 +159,8 @@ public class Sql {
     // Select Str (table, select fields, where fields)
     // - get select command for given table and set fields
     public static String selectStr(String table, Collection<String> selectFields, Collection<String> whereFields) {
-        String selectPart = collToString(selectFields, "\\(item)", ",");
-        String wherePart = collToString(whereFields, "\\(item)=@\\(item)", " AND ");
+        String selectPart = Coll.toString(selectFields, "\\(item)", ",");
+        String wherePart = Coll.toString(whereFields, "\\(item)=@\\(item)", " AND ");
         return "SELECT " + selectPart + " FROM " + table + " WHERE " + wherePart;
     }
 
@@ -194,8 +168,8 @@ public class Sql {
     // Update Str (table, update fields, where fields)
     // - get select command for given table and set fields
     public static String updateStr(String table, Collection<String> updateFields, Collection<String> whereFields) {
-        String setPart = collToString(updateFields, "\\(item)=@\\(item)", ",");
-        String wherePart = collToString(whereFields, "\\(item)=@\\(item)", " AND ");
+        String setPart = Coll.toString(updateFields, "\\(item)=@\\(item)", ",");
+        String wherePart = Coll.toString(whereFields, "\\(item)=@\\(item)", " AND ");
         return "UPDATE " + table + " SET " + setPart + " WHERE " + wherePart;
     }
 
@@ -203,8 +177,8 @@ public class Sql {
     // Insert Str (table)
     // - get insert command for given table and set fields
     public static String insertStr(String table, Collection<String> fields) {
-        String intoPart = collToString(fields, "\\(item)", ",");
-        String valuesPart = collToString(fields, "@\\(item)", ",");
+        String intoPart = Coll.toString(fields, "\\(item)", ",");
+        String valuesPart = Coll.toString(fields, "@\\(item)", ",");
         return "INSERT INTO " + table + "(" + intoPart + ") VALUES (" + valuesPart + ")";
     }
 }
