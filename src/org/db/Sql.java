@@ -1,5 +1,5 @@
 // @wolfram77
-package com.db;
+package org.db;
 
 //required modules
 import java.sql.*;
