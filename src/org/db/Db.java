@@ -11,8 +11,8 @@ public class Db {
     // constants
     static String driver = "oracle.jdbc.driver.OracleDriver";
     static String conn = "jdbc:oracle:thin:@localhost:1521/XE";
-    static String user = "scott";
-    static String pass = "tiger";
+    static String user = "m2mpoc";
+    static String pass = "m2mpoc";
     
     
     // Conn ()

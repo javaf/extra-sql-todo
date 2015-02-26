@@ -100,7 +100,6 @@ public class Sql extends HashMap<String, Object> {
     // - set @named_parameter with given value
     @Override
     public Sql put(String key, Object val) {
-        System.out.println("put("+key+", "+val+")");
         super.put(key, val);
         if (cmd == null) return this;
         try { setField(key, val); }
